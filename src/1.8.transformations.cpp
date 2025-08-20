@@ -1,20 +1,29 @@
+//
+// Created by Jeffrey Tabiri on 17/08/2025.
+//
+#include <iostream>
+#include <ostream>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 #include <shader/shader.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-
 void processInput(GLFWwindow *window);
 
-// settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+// Screen size
+constexpr unsigned int SCR_WIDTH {800};
+constexpr unsigned int SCR_HEIGHT {600};
 
 int main() {
+
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
@@ -44,17 +53,16 @@ int main() {
         return -1;
     }
 
-    Shader ourShader("resources/texture.vsh", "resources/texture.fsh");
-
+    Shader ourShader("resources/translation.vsh", "resources/texture.fsh");
 
     // set up vertex data, color data and texture1 coordinates.
     // ------------------------------------------------------------------
     float vertices[] = {
             // positions                    // colors                       // texture1 coords
-            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.55f, 0.55f, // top right
-            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.55f, 0.45f, // bottom right
-            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.45f, 0.45f, // bottom left
-            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.45f, 0.55f // top left
+            0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, // top right
+            0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+            -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
+            -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f // top left
     };
 
     unsigned int indices[] = {
@@ -157,8 +165,8 @@ int main() {
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
     // or set it via the texture class
     ourShader.setInt("texture2", 1);
-    // or set it via the texture1 class
 
+    // transform
 
     // render loop
     // -----------
@@ -186,10 +194,32 @@ int main() {
         int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
         glUniform4f(vertexColorLocation, 0.0f, greenValue, 0.0f, 1.0f);
         */
+
+        //translate object
         ourShader.use();
+
+        //transform
+        glm::mat4 transform = glm::mat4(1.0f);
+        transform = glm::rotate(transform, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        transform = glm::translate(transform, glm::vec3(0.5f, -0.5f, 0.0f));
+        unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        transform = glm::mat4(1.0f);
+        transform = glm::translate(transform, glm::vec3(-0.5f, 0.5f, 0.0f));
+        transform = glm::scale(transform, glm::vec3(glm::sin(glfwGetTime()), glm::sin(glfwGetTime()), 0.0f));
+        transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transform));
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+
+
+
+
+
 
         //glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         //glDrawArrays(GL_TRIANGLES, 0, 3);
@@ -228,4 +258,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
+
+
 
