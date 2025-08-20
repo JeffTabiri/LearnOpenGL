@@ -22,7 +22,7 @@ Shader::Shader(const char *vertexPath, const char *fragmentPath) {
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
         std::stringstream vShaderStream, fShaderStream;
-
+     
         //read files buffer contents into streams.
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
