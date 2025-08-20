@@ -14,7 +14,9 @@ include_directories(include)
 
 add_executable(1.7.textures src/1.7.textures.cpp src/Shader.cpp src/glad.c)
 add_executable(1.8.transformations src/1.8.transformations.cpp src/Shader.cpp src/glad.c)
+add_executable(1.9.coordinatesystems src/1.9.coordinatesystems.cpp src/Shader.cpp src/glad.c)
 
 target_link_libraries(1.7.textures PUBLIC glfw OpenGL::GL)
 target_link_libraries(1.8.transformations PUBLIC glfw OpenGL::GL)
+target_link_libraries(1.9.coordinatesystems PUBLIC glfw OpenGL::GL)
 
